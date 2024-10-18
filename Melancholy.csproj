@@ -33,4 +33,13 @@
     <PackageReference Include="Zlib-ng.NET" Version="1.0.1" />
     <PackageReference Include="ZstdSharp.Port" Version="0.8.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="CUE4Parse">
+      <HintPath>..\..\..\source\repos\MarketUpdater_ue5\CUE4Parse.dll</HintPath>
+    </Reference>
+    <Reference Include="ZstdSharp">
+      <HintPath>..\..\..\.nuget\packages\zstdsharp.port\0.8.0\lib\net8.0\ZstdSharp.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>

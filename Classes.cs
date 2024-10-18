@@ -95,9 +95,6 @@
         public class MarketData
         {
             public string playerId { get; set; } = string.Empty;
-            public string updated { get; set; } = string.Empty;
-            public string comment { get; set; } = string.Empty;
-            public string developerDiscord { get; set; } = string.Empty;
             public List<InventoryItem> inventory { get; set; } = [];
         }
 

@@ -59,10 +59,7 @@ namespace Melancholy
                 message = "OK",
                 data = new Classes.MarketData
                 {
-                    playerId = "MarketUpdater V2",
-                    updated = DateTime.Now.ToString("MM/dd/yyyy"),
-                    comment = "Market created by MarketUpdater V2",
-                    developerDiscord = "@bhvr",
+                    playerId = "xxx",
                     inventory = inventory
                 }
             };

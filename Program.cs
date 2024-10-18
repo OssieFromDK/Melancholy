@@ -107,7 +107,7 @@ SkipSettings:
     Console.Clear();
     Extras.Header();
 
-    await Cdn.GetCdnFiles();
+    //await Cdn.GetCdnFiles(); Don't care about CDN
 
     await Extras.MakeFile(Classes.Ids.CosmeticIds, "Cosmetics.json");
     await Extras.MakeFile(Classes.Ids.OutfitIds, "Outfits.json");
@@ -133,6 +133,8 @@ SkipSettings:
     Console.WriteLine("Bloodweb.json generated");
 
     await Player.Generate_PlayerLevel();
+
+    AllItemsMaker.GenerateAllItems();
 
     Console.WriteLine("\nPress any key to close...");
     Console.ReadKey();
