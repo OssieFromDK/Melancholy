@@ -58,7 +58,7 @@ namespace Melancholy
             var aesMax = Provider.RequiredKeys.Count + Provider.Keys.Count;
             var archiveMax = Provider.UnloadedVfs.Count + Provider.MountedVfs.Count;
 
-            Provider.LoadVirtualPaths(new FPackageFileVersion(522, 1009));
+            Provider.LoadVirtualPaths();
 
             Provider.TryChangeCulture(Provider.GetLanguageCode(ELanguage.English));
         }
@@ -193,80 +193,64 @@ namespace Melancholy
                         switch (type)
                         {
                             case "CustomizationItemDB":
-                                string customizationId = property?["customizationId"]?.ToString();
-                                string localizedString =
-                                    property?["UIData"]?["DisplayName"]?["LocalizedString"]?.ToString();
-                                
+                                string customizationId = property.Ci("customizationId")?.ToString() ?? string.Empty;
+                                string localizedString = property.Ci("UIData").Ci("DisplayName").Ci("LocalizedString")?.ToString() ?? string.Empty;
+
                                 Classes.Customization customization = new()
                                 {
-                                    CosmeticId = property?["customizationId"]?.ToString() ?? string.Empty,
-                                    CosmeticName =
-                                        property?["UIData"]?["DisplayName"]?["LocalizedString"]?.ToString() ??
-                                        string.Empty,
-                                    CosmeticDescription =
-                                        property?["UIData"]?["Description"]?["LocalizedString"]?.ToString() ??
-                                        string.Empty,
-                                    Category = property?["category"]?.ToString() ?? string.Empty,
-                                    AssociatedCharacterIndex =
-                                        property?["AssociatedCharacter"]?.ToString() ?? string.Empty,
-                                    Rarity = property?["Rarity"]?.ToString() ?? string.Empty,
-                                    IsInStore = property?["IsInStore"]?.ToString() ?? string.Empty,
-                                    EventId = property?["eventID"]?.ToString() ?? string.Empty,
-                                    Availability = property?["Availability"]?["ItemAvailability"]?.ToString() ??
-                                                   string.Empty,
+                                    CosmeticId = customizationId,
+                                    CosmeticName = localizedString,
+                                    CosmeticDescription = property.Ci("UIData").Ci("Description").Ci("LocalizedString")?.ToString() ?? string.Empty,
+                                    Category = property.Ci("category")?.ToString() ?? string.Empty,
+                                    AssociatedCharacterIndex = property.Ci("AssociatedCharacter")?.ToString() ?? string.Empty,
+                                    Rarity = property.Ci("Rarity")?.ToString() ?? string.Empty,
+                                    IsInStore = property.Ci("IsInStore")?.ToString() ?? string.Empty,
+                                    EventId = property.Ci("eventID")?.ToString() ?? string.Empty,
+                                    Availability = property.Ci("Availability").Ci("ItemAvailability")?.ToString() ?? string.Empty,
                                     FilePath = item ?? string.Empty,
-                                    IsLegacy = (property?["InclusionVersion"]?.ToString() == "Legacy"
-                                                && Regex.IsMatch(property?["UIData"]?["DisplayName"]?["LocalizedString"]?.ToString(), @"Legacy.*\b(I|II|III)\b", RegexOptions.IgnoreCase)),
-                                    IsExclusive = (exclusiveStrings.Any(s => customizationId.Contains(s)
-                                                                             && !customizationId.Contains("Charity")))
-                                                  || (localizedString.Contains("Twitchy")
-                                                      && !(localizedString.Contains("Flame") || localizedString.Contains("Medkit")))
+                                    IsLegacy = property.Ci("InclusionVersion")?.ToString() == "Legacy" && Regex.IsMatch(localizedString, @"Legacy.*\b(I|II|III)\b", RegexOptions.IgnoreCase),
+                                    IsExclusive = exclusiveStrings.Any(s => customizationId.Contains(s) && !customizationId.Contains("Charity")) || (localizedString.Contains("Twitchy") && !(localizedString.Contains("Flame") || localizedString.Contains("Medkit")))
                                 };
                                 if (!IsInBlacklist(customization.CosmeticId)) Classes.Ids.CosmeticIds.Add(customization);
                                 break;
                             case "OutfitDB":
                                 Classes.Outfit outfit = new()
                                 {
-                                    OutfitId = property?["ID"]?.ToString() ?? string.Empty,
-                                    OutfitName = property?["UIData"]?["DisplayName"]?["LocalizedString"]?.ToString() ??
-                                                 string.Empty,
-                                    OutfitDescription =
-                                        property?["UIData"]?["Description"]?["LocalizedString"]?.ToString() ??
-                                        string.Empty,
-                                    CollectionName = property?["CollectionName"]?["LocalizedString"]?.ToString() ??
-                                                     string.Empty,
-                                    Availability = property?["Availability"]?["ItemAvailability"]?.ToString() ??
-                                                   string.Empty,
+                                    OutfitId = property.Ci("ID")?.ToString() ?? string.Empty,
+                                    OutfitName = property.Ci("UIData").Ci("DisplayName").Ci("LocalizedString")?.ToString() ?? string.Empty,
+                                    OutfitDescription = property.Ci("UIData").Ci("Description").Ci("LocalizedString")?.ToString() ?? string.Empty,
+                                    CollectionName = property.Ci("CollectionName").Ci("LocalizedString")?.ToString() ?? string.Empty,
+                                    Availability = property.Ci("Availability").Ci("ItemAvailability")?.ToString() ?? string.Empty,
                                     FilePath = item ?? string.Empty
                                 };
                                 if (!IsInBlacklist(outfit.OutfitId)) Classes.Ids.OutfitIds.Add(outfit);
                                 break;
                             case "CharacterDescriptionDB":
-                                if (property?["CharacterId"]?.ToString() == "None") continue;
+                                if (property.Ci("CharacterId")?.ToString() == "None") continue;
                                 Classes.Character character = new()
                                 {
-                                    CharacterName = property?["CharacterId"]?.ToString() ?? string.Empty,
-                                    CharacterIndex = property?["characterIndex"]?.ToString() ?? string.Empty,
-                                    CharacterType = property?["Role"]?.ToString() ?? string.Empty,
-                                    CharacterDefaultItem = property?["DefaultItem"]?.ToString() ?? string.Empty,
-                                    Name = property?["DisplayName"]?["LocalizedString"]?.ToString() ?? string.Empty,
+                                    CharacterName = property.Ci("CharacterId")?.ToString() ?? string.Empty,
+                                    CharacterIndex = property.Ci("characterIndex")?.ToString() ?? string.Empty,
+                                    CharacterType = property.Ci("Role")?.ToString() ?? string.Empty,
+                                    CharacterDefaultItem = property.Ci("DefaultItem")?.ToString() ?? string.Empty,
+                                    Name = property.Ci("DisplayName").Ci("LocalizedString")?.ToString() ?? string.Empty,
                                     FilePath = item ?? string.Empty
                                 };
                                 Classes.Ids.DlcIds.Add(character);
                                 break;
                             case "ItemDB":
-                                if (property?["Type"]?.ToString() != "EInventoryItemType::Power")
+                                if (property.Ci("Type")?.ToString() != "EInventoryItemType::Power")
                                 {
                                     Classes.ItemOfferingPerk itemData = new()
                                     {
-                                        ItemId = property?["ItemId"]?.ToString() ?? string.Empty,
-                                        CharacterType = property?["Role"]?.ToString() ?? string.Empty,
-                                        Rarity = property?["Rarity"]?.ToString() ?? string.Empty,
-                                        Availability = property?["Availability"]?["ItemAvailability"]?.ToString() ?? string.Empty,
-                                        Name = property?["UIData"]?["DisplayName"]?["LocalizedString"]?.ToString() ?? string.Empty,
+                                        ItemId = property.Ci("ItemId")?.ToString() ?? string.Empty,
+                                        CharacterType = property.Ci("Role")?.ToString() ?? string.Empty,
+                                        Rarity = property.Ci("Rarity")?.ToString() ?? string.Empty,
+                                        Availability = property.Ci("Availability").Ci("ItemAvailability")?.ToString() ?? string.Empty,
+                                        Name = property.Ci("UIData").Ci("DisplayName").Ci("LocalizedString")?.ToString() ?? string.Empty,
                                         FilePath = item ?? string.Empty,
-                                        ShouldBeInInventory = property?["Inventory"]?.Value<bool>() ?? true,
-                                        EventId = property?["eventID"]?.ToString() ?? string.Empty
+                                        ShouldBeInInventory = property.Ci("Inventory")?.Value<bool>() ?? true,
+                                        EventId = property.Ci("eventID")?.ToString() ?? string.Empty
                                     };
                                     if (!IsInBlacklist(itemData.ItemId)) Classes.Ids.ItemIds.Add(itemData);
                                 }
@@ -274,43 +258,43 @@ namespace Melancholy
                             case "ItemAddonDB":
                                 Classes.ItemAddon itemAddon = new()
                                 {
-                                    ItemId = property?["ItemId"]?.ToString() ?? string.Empty,
-                                    CharacterType = property?["Role"]?.ToString() ?? string.Empty,
-                                    CharacterDefaultItem = property?["ParentItem"]?["itemIds"]?.Count() > 0 ? (property?["ParentItem"]?["itemIds"]?[0]?.ToString() ?? string.Empty) : string.Empty,
-                                    Rarity = property?["Rarity"]?.ToString() ?? string.Empty,
-                                    Availability = property?["Availability"]?["ItemAvailability"]?.ToString() ?? string.Empty,
-                                    Name = property?["UIData"]?["DisplayName"]?["LocalizedString"]?.ToString() ?? string.Empty,
+                                    ItemId = property.Ci("ItemId")?.ToString() ?? string.Empty,
+                                    CharacterType = property.Ci("Role")?.ToString() ?? string.Empty,
+                                    CharacterDefaultItem = property.Ci("ParentItem").Ci("itemIds")?.Count() > 0 ? (property.Ci("ParentItem").Ci("itemIds")?[0]?.ToString() ?? string.Empty) : string.Empty,
+                                    Rarity = property.Ci("Rarity")?.ToString() ?? string.Empty,
+                                    Availability = property.Ci("Availability").Ci("ItemAvailability")?.ToString() ?? string.Empty,
+                                    Name = property.Ci("UIData").Ci("DisplayName").Ci("LocalizedString")?.ToString() ?? string.Empty,
                                     FilePath = item ?? string.Empty,
-                                    ShouldBeInInventory = property?["Inventory"]?.Value<bool>() ?? true,
-                                    EventId = property?["eventID"]?.ToString() ?? string.Empty
+                                    ShouldBeInInventory = property.Ci("Inventory")?.Value<bool>() ?? true,
+                                    EventId = property.Ci("eventID")?.ToString() ?? string.Empty
                                 };
                                 if (!IsInBlacklist(itemAddon.ItemId)) Classes.Ids.AddonIds.Add(itemAddon);
                                 break;
                             case "OfferingDB":
                                 Classes.ItemOfferingPerk offering = new()
                                 {
-                                    ItemId = property?["ItemId"]?.ToString() ?? string.Empty,
-                                    CharacterType = property?["Role"]?.ToString() ?? string.Empty,
-                                    Rarity = property?["Rarity"]?.ToString() ?? string.Empty,
-                                    Availability = property?["Availability"]?["ItemAvailability"]?.ToString() ?? string.Empty,
-                                    Name = property?["UIData"]?["DisplayName"]?["LocalizedString"]?.ToString() ?? string.Empty,
+                                    ItemId = property.Ci("ItemId")?.ToString() ?? string.Empty,
+                                    CharacterType = property.Ci("Role")?.ToString() ?? string.Empty,
+                                    Rarity = property.Ci("Rarity")?.ToString() ?? string.Empty,
+                                    Availability = property.Ci("Availability").Ci("ItemAvailability")?.ToString() ?? string.Empty,
+                                    Name = property.Ci("UIData").Ci("DisplayName").Ci("LocalizedString")?.ToString() ?? string.Empty,
                                     FilePath = item ?? string.Empty,
-                                    ShouldBeInInventory = property?["Inventory"]?.Value<bool>() ?? true,
-                                    EventId = property?["eventID"]?.ToString() ?? string.Empty
+                                    ShouldBeInInventory = property.Ci("Inventory")?.Value<bool>() ?? true,
+                                    EventId = property.Ci("eventID")?.ToString() ?? string.Empty
                                 };
                                 if (!IsInBlacklist(offering.ItemId)) Classes.Ids.OfferingIds.Add(offering);
                                 break;
                             case "PerkDB":
                                 Classes.ItemOfferingPerk perk = new()
                                 {
-                                    ItemId = property?["ItemId"]?.ToString() ?? string.Empty,
-                                    CharacterType = property?["Role"]?.ToString() ?? string.Empty,
-                                    Rarity = property?["Rarity"]?.ToString() ?? string.Empty,
-                                    Availability = property?["Availability"]?["ItemAvailability"]?.ToString() ?? string.Empty,
-                                    Name = property?["UIData"]?["DisplayName"]?["LocalizedString"]?.ToString() ?? string.Empty,
+                                    ItemId = property.Ci("ItemId")?.ToString() ?? string.Empty,
+                                    CharacterType = property.Ci("Role")?.ToString() ?? string.Empty,
+                                    Rarity = property.Ci("Rarity")?.ToString() ?? string.Empty,
+                                    Availability = property.Ci("Availability").Ci("ItemAvailability")?.ToString() ?? string.Empty,
+                                    Name = property.Ci("UIData").Ci("DisplayName").Ci("LocalizedString")?.ToString() ?? string.Empty,
                                     FilePath = item ?? string.Empty,
-                                    ShouldBeInInventory = property?["Inventory"]?.Value<bool>() ?? true,
-                                    EventId = property?["eventID"]?.ToString() ?? string.Empty
+                                    ShouldBeInInventory = property.Ci("Inventory")?.Value<bool>() ?? true,
+                                    EventId = property.Ci("eventID")?.ToString() ?? string.Empty
                                 };
                                 if (!IsInBlacklist(perk.ItemId)) Classes.Ids.PerkIds.Add(perk);
                                 break;
@@ -352,5 +336,10 @@ namespace Melancholy
 
         [GeneratedRegex(@"Key=""(.*?)""")]
         private static partial Regex MyRegex();
+    }
+
+    internal static class JsonExt
+    {
+        public static JToken? Ci(this JToken? t, string name) => t is JObject o && o.TryGetValue(name, StringComparison.OrdinalIgnoreCase, out var v) ? v : null;
     }
 }
