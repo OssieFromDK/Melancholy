@@ -26,8 +26,7 @@ try
     {
         Extras.Settings = JsonConvert.DeserializeObject<Classes.Settings>(File.ReadAllText(SettingsFile));
 
-        Console.WriteLine(
-            $"Current settings:\nPak path: {Extras.Settings.PakPath}\nAES key: {Extras.Settings.AesKey}\nMappings path: {Extras.Settings.MappingsPath}\n");
+        Console.WriteLine($"Current settings:\nPak path: {Extras.Settings.PakPath}\nAES key: {Extras.Settings.AesKey}\nMappings path: {Extras.Settings.MappingsPath}\n");
         Console.Write("Would you like to load settings? (Y/n): ");
         switch (Console.ReadLine().ToLower())
         {
@@ -72,7 +71,7 @@ SkipSettings:
     Console.Clear();
     Extras.Header();
 
-    Console.WriteLine("Doing CUE4Parse stuffs...");
+    Console.WriteLine("Doing CUE4Parse stuff...");
 
     Cue4Parse.Initialize();
 
@@ -148,6 +147,7 @@ SkipSettings:
 
     AllItemsMaker.GenerateAllItems();
 
+    await File.WriteAllTextAsync("Files/cdn.txt", Cue4Parse.CdnAccessKey);
     Console.WriteLine("CDN Key: " + Cue4Parse.CdnAccessKey);
 
     Console.WriteLine("\nPress any key to close...");
