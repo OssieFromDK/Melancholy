@@ -92,7 +92,6 @@
 
         public class InventoryItem
         {
-            public long lastUpdatedAt { get; set; }
             public string objectId { get; set; } = string.Empty;
             public int quantity { get; set; }
         }

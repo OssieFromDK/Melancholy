@@ -43,6 +43,8 @@ namespace Melancholy
 
             Provider.Initialize();
 
+            LoadDynamicContentPaks();
+
             Provider.MappingsContainer = new FileUsmapTypeMappingsProvider(Extras.Settings.MappingsPath);
 
             var aesKey = new FAesKey(Extras.Settings.AesKey);
@@ -61,6 +63,25 @@ namespace Melancholy
             Provider.LoadVirtualPaths();
 
             Provider.TryChangeCulture(Provider.GetLanguageCode(ELanguage.English));
+        }
+
+        private static void LoadDynamicContentPaks()
+        {
+            var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            var root = Path.Combine(localAppData, "DeadByDaylight", "Saved", "PersistentDownloadDir", "DynamicContent");
+            if (!Directory.Exists(root)) return;
+
+            foreach (var contentDir in Directory.EnumerateDirectories(root))
+            {
+                Console.WriteLine($"Found Dynamic Content directory {Path.GetFileName(contentDir)}, mounting provider");
+
+                var paksRoot = Path.Combine(contentDir, "Content", "Paks");
+                if (!Directory.Exists(paksRoot)) continue;
+
+                foreach (var pattern in new[] { "*.pak", "*.utoc" })
+                foreach (var file in Directory.EnumerateFiles(paksRoot, pattern, SearchOption.AllDirectories))
+                    Provider!.RegisterVfs(file);
+            }
         }
 
         public static string GetAccessKey()

@@ -106,7 +106,6 @@ namespace Melancholy
 
                     return new Classes.InventoryItem
                     {
-                        lastUpdatedAt = DateTimeOffset.Now.ToUnixTimeSeconds(),
                         objectId = id,
                         quantity = (count == 0 ? new Random().Next(8, 88) : count)
                     };
