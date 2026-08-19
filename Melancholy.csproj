@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
-    <ApplicationIcon>favicon.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\favicon.ico</ApplicationIcon>
     <Authors>Essence_BHVR</Authors>
     <Copyright>Essence_BHVR</Copyright>
     <AssemblyVersion>2.0.0.0</AssemblyVersion>
@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="favicon.ico" />
+    <Content Include="Resources\favicon.ico" />
   </ItemGroup>
 
   <ItemGroup>
